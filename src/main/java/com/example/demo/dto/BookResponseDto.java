@@ -6,7 +6,8 @@ import lombok.Data;
 // use Lombok @Data annotation to require all args in constructor
 // create getters/setters and provide ToString method
 @Data
-public  class BookRequestDto {
+public class BookResponseDto {
+    private int id;
     private String name;
     private String author;
     private String isbn;

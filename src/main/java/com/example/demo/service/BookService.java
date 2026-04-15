@@ -27,10 +27,10 @@ public class BookService {
     public Book save(BookRequestDto bookRequestDto) {
         Book book = new Book();
         // TODO: move to mapper
-        book.setName(bookRequestDto.name());
-        book.setAuthor(bookRequestDto.author());
-        book.setIsbn(bookRequestDto.isbn());
-        book.setFormat(BookFormats.valueOf(bookRequestDto.format()));
+        book.setName(bookRequestDto.getName());
+        book.setAuthor(bookRequestDto.getAuthor());
+        book.setIsbn(bookRequestDto.getIsbn());
+        book.setFormat(bookRequestDto.getFormat());
         return this.bookRepository.save(book);
     }
 
@@ -38,17 +38,17 @@ public class BookService {
         Book book = this.bookRepository.findById(id).orElseThrow();
 
         // TODO: move to mapper
-        if(bookRequestDto.name() != null) {
-            book.setName(bookRequestDto.name());
+        if(bookRequestDto.getName() != null) {
+            book.setName(bookRequestDto.getName());
         }
-        if(bookRequestDto.isbn() != null) {
-            book.setIsbn(bookRequestDto.isbn());
+        if(bookRequestDto.getIsbn() != null) {
+            book.setIsbn(bookRequestDto.getIsbn());
         }
-        if(bookRequestDto.format() != null) {
-            book.setFormat(BookFormats.valueOf(bookRequestDto.format()));
+        if(bookRequestDto.getFormat() != null) {
+            book.setFormat(bookRequestDto.getFormat());
         }
-        if(bookRequestDto.author() != null) {
-            book.setAuthor(bookRequestDto.author());
+        if(bookRequestDto.getAuthor() != null) {
+            book.setAuthor(bookRequestDto.getAuthor());
         }
         return this.bookRepository.save(book);
     }
