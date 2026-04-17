@@ -1,7 +1,9 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.BookRequestDto;
+import com.example.demo.dto.BookResponseDto;
 import com.example.demo.entity.Book;
+import com.example.demo.mapper.BookMapper;
 import com.example.demo.service.BookService;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,33 +41,36 @@ public class BookController {
     // This good also be written as just:
     // @GetMapping("")
     @RequestMapping(value = "", method = RequestMethod.GET)
-    Iterable<Book> getAll() {
-        return this.bookService.findAll();
+    Iterable<BookResponseDto> getAll() {
+        return BookMapper.toResponseDto(this.bookService.findAll());
     }
 
     // get book by ID, note the dynamic route param is mapped to the input param
     // using the @PathVariable annotation
     @GetMapping("/{id}")
     // type path param gets injected directly in the controller param using @PathVariable
-    Optional<Book> get(@PathVariable int id) {
-        return this.bookService.findById(id);
+    // return DTO from our api
+    BookResponseDto get(@PathVariable int id) {
+        Optional<Book> book = this.bookService.findById(id);
+        // TODO: handle 404
+        if (book.isEmpty()) return new BookResponseDto();
+        return BookMapper.toResponseDto(book.get());
     }
 
     // create a book
     @PostMapping("")
     // Request body automatically maps post data to book entity
     // note we are using a DTO to define the structure of the data we expect from the client
-    Book create(@RequestBody BookRequestDto book) {
-        System.out.println(book);
-        return this.bookService.save(book);
+    Book create(@RequestBody BookRequestDto bookRequestDto) {
+        return this.bookService.save(BookMapper.toEntity(bookRequestDto));
     }
 
     // update a book
     @PutMapping("/{id}")
     // Request body automatically maps post data to book model
     // Path param (id) automatically maps using @PathVariable
-    Book update(@RequestBody BookRequestDto book, @PathVariable int id) {
-        return this.bookService.update(book, id);
+    Book update(@RequestBody BookRequestDto bookRequestDto, @PathVariable int id) {
+        return this.bookService.update(BookMapper.toEntity(bookRequestDto));
     }
 
     // delete book by ID
