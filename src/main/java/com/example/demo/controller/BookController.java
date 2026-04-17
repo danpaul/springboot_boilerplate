@@ -64,7 +64,7 @@ public class BookController {
     @PutMapping("/{id}")
     // Request body automatically maps post data to book model
     // Path param (id) automatically maps using @PathVariable
-    Book update(@RequestBody BookRequestDto book,  @PathVariable int id) {
+    Book update(@RequestBody BookRequestDto book, @PathVariable int id) {
         return this.bookService.update(book, id);
     }
 
