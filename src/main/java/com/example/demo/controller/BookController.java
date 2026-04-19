@@ -5,77 +5,118 @@ import com.example.demo.dto.BookResponseDto;
 import com.example.demo.entity.Book;
 import com.example.demo.mapper.BookMapper;
 import com.example.demo.service.BookService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-/*
- * @RestController is a Spring Boot annotation used to create RESTful web services.
- *
- * It combines two annotations:
- * - @Controller → marks the class as a web controller
- * - @ResponseBody → tells Spring to return data (like JSON or XML) directly
- *   instead of rendering a webpage (HTML)
- *
- * This means:
- * - Methods in this class handle HTTP requests (GET, POST, PUT, DELETE, etc.)
- * - The return values of these methods are automatically converted into JSON (by default)
- *
- * In short:
- * @RestController = "This class handles web requests and returns data directly."
- */
+@Tag(name = "Books", description = "Operations for managing books")
 @RestController
-// Handle all requests going to /books
 @RequestMapping("books")
 public class BookController {
-
-    // declare a non-modifiable field to hold the book service
     final private BookService bookService;
 
-    // Use constructor injection to automatically create the service
     public BookController(BookService bookService) {
         this.bookService = bookService;
     }
 
-    // Get all books, long form request mapping
-    // This good also be written as just:
-    // @GetMapping("")
-    @RequestMapping(value = "", method = RequestMethod.GET)
-    Iterable<BookResponseDto> getAll() {
+    @GetMapping("")
+    @Operation(summary = "Get all books", description = "Returns all books as a list of response DTOs.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Books retrieved successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = BookResponseDto.class))
+                    )
+            )
+    })
+    public Iterable<BookResponseDto> getAll() {
         return BookMapper.toResponseDto(this.bookService.findAll());
     }
 
-    // get book by ID, note the dynamic route param is mapped to the input param
-    // using the @PathVariable annotation
     @GetMapping("/{id}")
-    // type path param gets injected directly in the controller param using @PathVariable
-    // return DTO from our api
-    BookResponseDto get(@PathVariable int id) {
+    @Operation(summary = "Get book by id", description = "Returns a single book for the given id.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Book retrieved successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = BookResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Book not found",
+                    content = @Content
+            )
+    })
+    public BookResponseDto get(@PathVariable int id) {
         Optional<Book> book = this.bookService.findById(id);
         // TODO: handle 404
         if (book.isEmpty()) return new BookResponseDto();
         return BookMapper.toResponseDto(book.get());
     }
 
-    // create a book
     @PostMapping("")
-    // Request body automatically maps post data to book entity
-    // note we are using a DTO to define the structure of the data we expect from the client
-    Book create(@RequestBody BookRequestDto bookRequestDto) {
+    @Operation(summary = "Create a book", description = "Creates a new book from the provided request payload.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Book created successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Book.class))
+            )
+    })
+    public Book create(
+            @RequestBody(description = "Book payload used to create a new book", required = true)
+            @org.springframework.web.bind.annotation.RequestBody BookRequestDto bookRequestDto
+    ) {
         return this.bookService.save(BookMapper.toEntity(bookRequestDto));
     }
 
-    // update a book
     @PutMapping("/{id}")
-    // Request body automatically maps post data to book model
-    // Path param (id) automatically maps using @PathVariable
-    Book update(@RequestBody BookRequestDto bookRequestDto, @PathVariable int id) {
+    @Operation(summary = "Update a book", description = "Updates an existing book for the given id using the provided payload.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Book updated successfully",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Book.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Book not found",
+                    content = @Content
+            )
+    })
+    public Book update(
+            @RequestBody(description = "Book payload used to update an existing book", required = true)
+            @org.springframework.web.bind.annotation.RequestBody BookRequestDto bookRequestDto,
+            @PathVariable int id
+    ) {
         return this.bookService.update(BookMapper.toEntity(bookRequestDto));
     }
-
-    // delete book by ID
+    
     @DeleteMapping("/{id}")
-    Object delete(@PathVariable int id) {
+    @Operation(summary = "Delete a book", description = "Deletes the book for the given id.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Book deleted successfully",
+                    content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Book not found",
+                    content = @Content
+            )
+    })
+    public Object delete(@PathVariable int id) {
         this.bookService.delete(id);
         return new Object();
     }
