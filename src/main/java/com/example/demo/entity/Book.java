@@ -3,19 +3,18 @@ package com.example.demo.entity;
 import com.example.demo.enums.BookFormats;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 // Define an entity. JPA will automatically sync this with an underlying table
 @Entity
 @Table(
         // explicitly define the DB table used
-        name="books",
+        name = "books",
         // define indexes (important for columns we expect to query against)
         indexes = {
-                // index the author column
-                @Index(name="idx_author", columnList = "author"),
                 // index the ISBN number
-                @Index(name="idx_isbn", columnList = "isbn"),
-                // compound index to find all author's work of a specific format
-                @Index(name="idx_author_format", columnList = "author, format")
+                @Index(name = "idx_isbn", columnList = "isbn"),
         }
 )
 public class Book {
@@ -28,8 +27,13 @@ public class Book {
     @Column(length = 128, nullable = false)
     private String name;
 
-    @Column(length = 128, nullable = false)
-    private String author;
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(
+            name = "book_author",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "author_id")
+    )
+    private List<Author> authors = new ArrayList<>();
 
     // ensure the ISBN (book identifier) number is unique
     @Column(length = 16, nullable = false, unique = true)
@@ -56,12 +60,12 @@ public class Book {
         this.name = name;
     }
 
-    public String getAuthor() {
-        return author;
+    public List<Author> getAuthors() {
+        return authors;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
+    public void setAuthors(List<Author> authors) {
+        this.authors = authors;
     }
 
     public String getIsbn() {

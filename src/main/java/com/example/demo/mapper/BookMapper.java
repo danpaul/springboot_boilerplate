@@ -13,7 +13,7 @@ public class BookMapper {
         BookResponseDto bookResponseDto = new BookResponseDto();
         bookResponseDto.setId(book.getId());
         bookResponseDto.setName(book.getName());
-        bookResponseDto.setAuthor(book.getAuthor());
+        bookResponseDto.setAuthors(book.getAuthors());
         bookResponseDto.setIsbn(book.getIsbn());
         bookResponseDto.setFormat(book.getFormat());
         return bookResponseDto;
@@ -35,7 +35,7 @@ public class BookMapper {
             book.setId(bookRequestDto.getId().orElseThrow());
         }
         book.setName(bookRequestDto.getName());
-        book.setAuthor(bookRequestDto.getAuthor());
+        book.setAuthors(bookRequestDto.getAuthors());
         book.setFormat(bookRequestDto.getFormat());
         book.setIsbn(bookRequestDto.getIsbn());
         return book;
