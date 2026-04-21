@@ -14,6 +14,8 @@ public class Author {
     private String firstName;
     private String lastName;
 
+    // mapped by indicates author is the child of Book
+    // mapping relation is managed by parent (Book)
     @ManyToMany(mappedBy = "authors")
     private List<Book> books;
 

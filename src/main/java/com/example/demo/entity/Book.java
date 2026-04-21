@@ -27,12 +27,15 @@ public class Book {
     @Column(length = 128, nullable = false)
     private String name;
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinTable(
-            name = "book_author",
-            joinColumns = @JoinColumn(name = "book_id"),
-            inverseJoinColumns = @JoinColumn(name = "author_id")
-    )
+    // only save and update operations will be persisted
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    // it is possible to specify columns for joins, if we want greater control
+    // otherwise, these are created automatically
+    //    @JoinTable(
+    //            name = "book_author",
+    //            joinColumns = @JoinColumn(name = "book_id"),
+    //            inverseJoinColumns = @JoinColumn(name = "author_id")
+    //    )
     private List<Author> authors = new ArrayList<>();
 
     // ensure the ISBN (book identifier) number is unique
