@@ -61,6 +61,7 @@ public class BookController {
     @PostMapping("")
     // Request body automatically maps post data to book entity
     // note we are using a DTO to define the structure of the data we expect from the client
+    // TODO: fix typing
     Book create(@RequestBody BookRequestDto bookRequestDto) {
         return this.bookService.save(BookMapper.toEntity(bookRequestDto));
     }
