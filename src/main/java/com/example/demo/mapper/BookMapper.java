@@ -3,10 +3,10 @@ package com.example.demo.mapper;
 import com.example.demo.dto.BookRequestDto;
 import com.example.demo.dto.BookResponseDto;
 import com.example.demo.entity.Book;
-import java.util.Optional;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.Named;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Mapper(componentModel = "spring", uses = {ReviewMapper.class})
 public interface BookMapper {
@@ -14,11 +14,69 @@ public interface BookMapper {
 
     Iterable<BookResponseDto> toResponseDto(Iterable<Book> books);
 
-    @Mapping(target = "id", source = "id", qualifiedByName = "optionalIdToInt")
     Book toEntity(BookRequestDto bookRequestDto);
+}
 
-    @Named("optionalIdToInt")
-    default int optionalIdToInt(Optional<Integer> id) {
-        return id != null && id.isPresent() ? id.get() : 0;
+/**
+ * Teaching example only: this shows roughly what MapStruct generates for BookMapper.
+ */
+class BookMapperManualExample {
+
+    private final ReviewMapper reviewMapper;
+
+    BookMapperManualExample(ReviewMapper reviewMapper) {
+        this.reviewMapper = reviewMapper;
+    }
+
+    BookResponseDto toResponseDto(Book book) {
+        if (book == null) {
+            return null;
+        }
+
+        BookResponseDto dto = new BookResponseDto();
+        dto.setId(book.getId());
+        dto.setName(book.getName());
+        dto.setAuthor(book.getAuthor());
+        dto.setIsbn(book.getIsbn());
+        dto.setFormat(book.getFormat());
+
+        if (book.getReviews() != null) {
+            dto.setReviews(toList(reviewMapper.toResponseDto(book.getReviews())));
+        }
+
+        return dto;
+    }
+
+    Iterable<BookResponseDto> toResponseDto(Iterable<Book> books) {
+        if (books == null) {
+            return null;
+        }
+
+        List<BookResponseDto> result = new ArrayList<>();
+        for (Book book : books) {
+            result.add(toResponseDto(book));
+        }
+        return result;
+    }
+
+    Book toEntity(BookRequestDto bookRequestDto) {
+        if (bookRequestDto == null) {
+            return null;
+        }
+
+        Book book = new Book();
+        book.setName(bookRequestDto.getName());
+        book.setAuthor(bookRequestDto.getAuthor());
+        book.setIsbn(bookRequestDto.getIsbn());
+        book.setFormat(bookRequestDto.getFormat());
+        return book;
+    }
+
+    private <T> List<T> toList(Iterable<T> iterable) {
+        List<T> list = new ArrayList<>();
+        for (T item : iterable) {
+            list.add(item);
+        }
+        return list;
     }
 }

@@ -7,10 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReviewResponseDto {
+public class ReviewRequestDto {
     private Long id;
     private String title;
     private String content;
     private int rating;
-    private UserResponseDto user;
+    private Long userId;
+    private Integer bookId;
 }

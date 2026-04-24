@@ -5,7 +5,9 @@ import com.example.demo.dto.BookResponseDto;
 import com.example.demo.entity.Book;
 import com.example.demo.mapper.BookMapper;
 import com.example.demo.service.BookService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -55,7 +57,7 @@ public class BookController {
     BookResponseDto get(@PathVariable int id) {
         Optional<Book> book = this.bookService.findById(id);
         // TODO: handle 404
-        if (book.isEmpty()) return new BookResponseDto();
+        if (book.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Book not found");
         return this.bookMapper.toResponseDto(book.get());
     }
 
@@ -73,6 +75,8 @@ public class BookController {
     // Request body automatically maps post data to book model
     // Path param (id) automatically maps using @PathVariable
     Book update(@RequestBody BookRequestDto bookRequestDto, @PathVariable int id) {
+        // Route id is the source of truth for updates.
+        bookRequestDto.setId(id);
         return this.bookService.update(this.bookMapper.toEntity(bookRequestDto));
     }
 

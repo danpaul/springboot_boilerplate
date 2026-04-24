@@ -2,8 +2,11 @@ package com.example.demo.entity;
 
 import com.example.demo.enums.BookFormats;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-import java.util.ArrayList;
 import java.util.List;
 
 // Define an entity. JPA will automatically sync this with an underlying table
@@ -17,6 +20,10 @@ import java.util.List;
                 @Index(name = "idx_isbn", columnList = "isbn"),
         }
 )
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString(exclude = "reviews")
 public class Book {
     // define a primary ID column
     @Id
@@ -39,53 +46,4 @@ public class Book {
 
     @OneToMany(mappedBy = "book")
     private List<Review> reviews;
-
-    // getters and setters
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getIsbn() {
-        return isbn;
-    }
-
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
-    }
-
-    public BookFormats getFormat() {
-        return format;
-    }
-
-    public void setFormat(BookFormats format) {
-        this.format = format;
-    }
-
-    public List<Review> getReviews() {
-        return reviews;
-    }
-
-    public void setReviews(List<Review> reviews) {
-        this.reviews = reviews;
-    }
 }
