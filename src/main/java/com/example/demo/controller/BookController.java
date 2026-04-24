@@ -31,10 +31,12 @@ public class BookController {
 
     // declare a non-modifiable field to hold the book service
     final private BookService bookService;
+    final private BookMapper bookMapper;
 
     // Use constructor injection to automatically create the service
-    public BookController(BookService bookService) {
+    public BookController(BookService bookService, BookMapper bookMapper) {
         this.bookService = bookService;
+        this.bookMapper = bookMapper;
     }
 
     // Get all books, long form request mapping
@@ -42,7 +44,7 @@ public class BookController {
     // @GetMapping("")
     @RequestMapping(value = "", method = RequestMethod.GET)
     Iterable<BookResponseDto> getAll() {
-        return BookMapper.toResponseDto(this.bookService.findAll());
+        return this.bookMapper.toResponseDto(this.bookService.findAll());
     }
 
     // get book by ID, note the dynamic route param is mapped to the input param
@@ -54,7 +56,7 @@ public class BookController {
         Optional<Book> book = this.bookService.findById(id);
         // TODO: handle 404
         if (book.isEmpty()) return new BookResponseDto();
-        return BookMapper.toResponseDto(book.get());
+        return this.bookMapper.toResponseDto(book.get());
     }
 
     // create a book
@@ -63,7 +65,7 @@ public class BookController {
     // note we are using a DTO to define the structure of the data we expect from the client
     Book create(@RequestBody BookRequestDto bookRequestDto) {
         System.out.println(bookRequestDto);
-        return this.bookService.save(BookMapper.toEntity(bookRequestDto));
+        return this.bookService.save(this.bookMapper.toEntity(bookRequestDto));
     }
 
     // update a book
@@ -71,7 +73,7 @@ public class BookController {
     // Request body automatically maps post data to book model
     // Path param (id) automatically maps using @PathVariable
     Book update(@RequestBody BookRequestDto bookRequestDto, @PathVariable int id) {
-        return this.bookService.update(BookMapper.toEntity(bookRequestDto));
+        return this.bookService.update(this.bookMapper.toEntity(bookRequestDto));
     }
 
     // delete book by ID

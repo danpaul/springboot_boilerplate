@@ -1,15 +1,13 @@
 package com.example.demo.dto;
 
-import com.example.demo.entity.Author;
 import com.example.demo.enums.BookFormats;
 
-import java.util.List;
 import java.util.Optional;
 
 public class BookRequestDto {
     private Optional<Integer> id;
     private String name;
-    private List<Author> authors;
+    private String author;
     private String isbn;
     private BookFormats format;
 
@@ -29,12 +27,12 @@ public class BookRequestDto {
         this.name = name;
     }
 
-    public List<Author> getAuthors() {
-        return authors;
+    public String getAuthor() {
+        return author;
     }
 
-    public void setAuthors(List<Author> authors) {
-        this.authors = authors;
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public String getIsbn() {

@@ -1,6 +1,5 @@
 package com.example.demo.dto;
 
-import com.example.demo.entity.Author;
 import com.example.demo.enums.BookFormats;
 
 import java.util.List;
@@ -8,9 +7,10 @@ import java.util.List;
 public class BookResponseDto {
     private int id;
     private String name;
-    private List<Author> authors;
+    private String author;
     private String isbn;
     private BookFormats format;
+    private List<ReviewResponseDto> reviews;
 
     public int getId() {
         return id;
@@ -28,12 +28,12 @@ public class BookResponseDto {
         this.name = name;
     }
 
-    public List<Author> getAuthors() {
-        return authors;
+    public String getAuthor() {
+        return author;
     }
 
-    public void setAuthors(List<Author> authors) {
-        this.authors = authors;
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public String getIsbn() {
@@ -50,5 +50,13 @@ public class BookResponseDto {
 
     public void setFormat(BookFormats format) {
         this.format = format;
+    }
+
+    public List<ReviewResponseDto> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<ReviewResponseDto> reviews) {
+        this.reviews = reviews;
     }
 }

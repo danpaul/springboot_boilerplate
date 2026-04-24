@@ -3,41 +3,22 @@ package com.example.demo.mapper;
 import com.example.demo.dto.BookRequestDto;
 import com.example.demo.dto.BookResponseDto;
 import com.example.demo.entity.Book;
+import java.util.Optional;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
-import java.util.ArrayList;
-import java.util.List;
+@Mapper(componentModel = "spring", uses = {ReviewMapper.class})
+public interface BookMapper {
+    BookResponseDto toResponseDto(Book book);
 
-public class BookMapper {
-    // maps entity to DTO
-    public static BookResponseDto toResponseDto(Book book) {
-        BookResponseDto bookResponseDto = new BookResponseDto();
-        bookResponseDto.setId(book.getId());
-        bookResponseDto.setName(book.getName());
-        bookResponseDto.setAuthors(book.getAuthors());
-        bookResponseDto.setIsbn(book.getIsbn());
-        bookResponseDto.setFormat(book.getFormat());
-        return bookResponseDto;
-    }
+    Iterable<BookResponseDto> toResponseDto(Iterable<Book> books);
 
-    // maps entities to DTOs
-    public static Iterable<BookResponseDto> toResponseDto(Iterable<Book> books) {
-        List<BookResponseDto> bookDtos = new ArrayList<>();
-        for (Book book : books) {
-            bookDtos.add(toResponseDto(book));
-        }
-        return bookDtos;
-    }
+    @Mapping(target = "id", source = "id", qualifiedByName = "optionalIdToInt")
+    Book toEntity(BookRequestDto bookRequestDto);
 
-    // maps request DTO to entity
-    public static Book toEntity(BookRequestDto bookRequestDto) {
-        Book book = new Book();
-        if (bookRequestDto.getId() != null) {
-            book.setId(bookRequestDto.getId().orElseThrow());
-        }
-        book.setName(bookRequestDto.getName());
-        book.setAuthors(bookRequestDto.getAuthors());
-        book.setFormat(bookRequestDto.getFormat());
-        book.setIsbn(bookRequestDto.getIsbn());
-        return book;
+    @Named("optionalIdToInt")
+    default int optionalIdToInt(Optional<Integer> id) {
+        return id != null && id.isPresent() ? id.get() : 0;
     }
 }

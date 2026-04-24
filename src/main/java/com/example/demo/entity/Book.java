@@ -27,16 +27,7 @@ public class Book {
     @Column(length = 128, nullable = false)
     private String name;
 
-    // only save and update operations will be persisted
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    // it is possible to specify columns for joins, if we want greater control
-    // otherwise, these are created automatically
-    //    @JoinTable(
-    //            name = "book_author",
-    //            joinColumns = @JoinColumn(name = "book_id"),
-    //            inverseJoinColumns = @JoinColumn(name = "author_id")
-    //    )
-    private List<Author> authors = new ArrayList<>();
+    private String author;
 
     // ensure the ISBN (book identifier) number is unique
     @Column(length = 16, nullable = false, unique = true)
@@ -45,6 +36,9 @@ public class Book {
     // use an enum for book format
     @Column(length = 16, nullable = false)
     private BookFormats format;
+
+    @OneToMany(mappedBy = "book")
+    private List<Review> reviews;
 
     // getters and setters
     public int getId() {
@@ -63,12 +57,12 @@ public class Book {
         this.name = name;
     }
 
-    public List<Author> getAuthors() {
-        return authors;
+    public String getAuthor() {
+        return author;
     }
 
-    public void setAuthors(List<Author> authors) {
-        this.authors = authors;
+    public void setAuthor(String author) {
+        this.author = author;
     }
 
     public String getIsbn() {
@@ -85,5 +79,13 @@ public class Book {
 
     public void setFormat(BookFormats format) {
         this.format = format;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
     }
 }
