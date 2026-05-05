@@ -8,6 +8,7 @@ import com.example.demo.enums.Roles;
 import com.example.demo.repository.BookRepository;
 import com.example.demo.repository.ReviewRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.service.AuthService;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -20,11 +21,18 @@ public class DataSeeder implements ApplicationRunner {
     private final BookRepository bookRepository;
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
+    private final AuthService authService;
 
-    public DataSeeder(UserRepository userRepository, BookRepository bookRepository, ReviewRepository reviewRepository) {
+    public DataSeeder(
+            UserRepository userRepository,
+            BookRepository bookRepository,
+            ReviewRepository reviewRepository,
+            AuthService authService
+    ) {
         this.userRepository = userRepository;
         this.bookRepository = bookRepository;
         this.reviewRepository = reviewRepository;
+        this.authService = authService;
     }
 
     @Override
@@ -42,9 +50,9 @@ public class DataSeeder implements ApplicationRunner {
         User bob = new User("bob", "bob123", List.of(Roles.ROLE_USER));
         bob.setEmail("bob@example.com");
 
-        admin = userRepository.save(admin);
-        alice = userRepository.save(alice);
-        bob = userRepository.save(bob);
+        admin = authService.register(admin);
+        alice = authService.register(alice);
+        bob = authService.register(bob);
 
         Book cleanCode = new Book();
         cleanCode.setName("Clean Code");

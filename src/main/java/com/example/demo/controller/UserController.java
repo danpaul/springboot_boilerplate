@@ -4,7 +4,9 @@ import com.example.demo.dto.AdminUserDto;
 import com.example.demo.entity.User;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -28,8 +30,7 @@ public class UserController {
     @GetMapping("/{id}")
     AdminUserDto get(@PathVariable Long id) {
         Optional<User> user = this.userService.findById(id);
-        // TODO: handle 404
-        if (user.isEmpty()) return new AdminUserDto();
+        if (user.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         return this.userMapper.toAdminDto(user.get());
     }
 
@@ -44,7 +45,7 @@ public class UserController {
         Optional<User> existingUser = this.userService.findById(id);
 
         // TODO: handle 404
-        if (existingUser.isEmpty()) return new AdminUserDto();
+        if (existingUser.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
 
         User user = this.userMapper.toEntity(adminUserDto);
         user.setId(existingUser.get().getId());
