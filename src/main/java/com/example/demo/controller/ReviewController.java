@@ -6,6 +6,7 @@ import com.example.demo.entity.Review;
 import com.example.demo.mapper.ReviewMapper;
 import com.example.demo.service.ReviewService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -45,6 +46,7 @@ public class ReviewController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasPermission(#id, 'Review', 'update')")
     ReviewResponseDto update(@RequestBody ReviewRequestDto reviewRequestDto, @PathVariable Long id) {
         reviewRequestDto.setId(id);
         Review review = this.reviewService.toEntity(reviewRequestDto);

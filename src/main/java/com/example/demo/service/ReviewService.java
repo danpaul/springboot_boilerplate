@@ -9,9 +9,6 @@ import com.example.demo.mapper.ReviewMapper;
 import com.example.demo.repository.BookRepository;
 import com.example.demo.repository.ReviewRepository;
 import com.example.demo.repository.UserRepository;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -49,28 +46,6 @@ public class ReviewService {
     }
 
     public Review update(Review review) {
-        Review existingReview = this.reviewRepository.findById(review.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Review not found"));
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !(authentication.getPrincipal() instanceof User)) {
-            throw new AccessDeniedException("Authentication required");
-        }
-
-        User currentUser = (User) authentication.getPrincipal();
-        boolean isAdmin = currentUser.getAuthorities().stream()
-                .anyMatch(authority -> "ROLE_ADMIN".equals(authority.getAuthority()));
-        boolean isOwner = existingReview.getUser() != null
-                && existingReview.getUser().getId().equals(currentUser.getId());
-
-        if (!isAdmin && !isOwner) {
-            throw new AccessDeniedException("You can only update your own reviews");
-        }
-
-        // Preserve ownership and target book during update to prevent spoofing.
-        review.setUser(existingReview.getUser());
-        review.setBook(existingReview.getBook());
-
         return this.reviewRepository.save(review);
     }
 

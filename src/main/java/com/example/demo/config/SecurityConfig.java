@@ -1,8 +1,11 @@
 package com.example.demo.config;
 
 import com.example.demo.filter.JwtAuthenticationFilter;
+import com.example.demo.security.CustomPermissionEvaluator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -38,5 +41,20 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         // Using BCryptPasswordEncoder for password hashing
         return new BCryptPasswordEncoder();
+    }
+
+    // This bean customizes how Spring evaluates method-level security expressions
+    // such as @PreAuthorize("hasPermission(...)").
+    @Bean
+    public MethodSecurityExpressionHandler methodSecurityExpressionHandler(
+            CustomPermissionEvaluator customPermissionEvaluator
+    ) {
+        // Default handler knows how to process common expressions:
+        // hasRole(...), isAuthenticated(), hasPermission(...), etc.
+        DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
+        // Plug in our custom evaluator so hasPermission(...) can run
+        // our own ownership/admin checks (for example on reviews).
+        expressionHandler.setPermissionEvaluator(customPermissionEvaluator);
+        return expressionHandler;
     }
 }
