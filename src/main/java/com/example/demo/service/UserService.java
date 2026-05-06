@@ -10,8 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class UserService implements UserDetailsService {
-
+public class UserService {
     private final UserRepository userRepository;
 
     public UserService(UserRepository userRepository) {
@@ -37,9 +36,5 @@ public class UserService implements UserDetailsService {
     public void delete(Long id) {
         this.userRepository.deleteById(id);
     }
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
-    }
+    
 }

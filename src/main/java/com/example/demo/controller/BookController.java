@@ -39,20 +39,17 @@ public class BookController {
 
     // Example of how to use validation annotations
     @PostMapping("")
-    @PreAuthorize("hasRole('ADMIN')")
     Book create(@RequestBody @Valid BookRequestDto bookRequestDto) {
         return this.bookService.save(this.bookMapper.toEntity(bookRequestDto));
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     Book update(@RequestBody BookRequestDto bookRequestDto, @PathVariable int id) {
         bookRequestDto.setId(id);
         return this.bookService.update(this.bookMapper.toEntity(bookRequestDto));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     Object delete(@PathVariable int id) {
         this.bookService.delete(id);
         return new Object();

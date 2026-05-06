@@ -13,13 +13,9 @@ import java.util.List;
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+    public AuthService(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtUtil = jwtUtil;
     }
 
     public User register(User user) {
@@ -27,23 +23,15 @@ public class AuthService {
             throw new IllegalArgumentException("Username already exists");
         }
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        if (user.getRoles() == null || user.getRoles().isEmpty()) {
-            user.setRoles(List.of(Roles.ROLE_USER));
-        }
-
         return this.userRepository.save(user);
     }
 
     public User login(String username, String password) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("Invalid username or password"));
-        if (passwordEncoder.matches(password, user.getPassword())) {
-            return user;
-        }
         throw new IllegalArgumentException("Invalid username or password");
     }
 
     public String generateToken(User user) {
-        return this.jwtUtil.generateToken(user.getUsername());
+        return "token-123";
     }
 }

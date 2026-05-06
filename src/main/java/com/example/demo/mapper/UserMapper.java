@@ -17,12 +17,14 @@ public interface UserMapper {
 
     Iterable<AdminUserDto> toAdminDto(Iterable<User> users);
 
-    @Mapping(target = "authorities", ignore = true)
+    // @Mapping(target = "authorities", ignore = true)
+    // TODO
     User toEntity(AdminUserDto adminUserDto);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "roles", ignore = true)
-    @Mapping(target = "authorities", ignore = true)
+        // @Mapping(target = "authorities", ignore = true)
+        // TODO
     User toEntity(AuthRegisterRequestDto authRegisterRequestDto);
 
     Iterable<User> toEntity(Iterable<AdminUserDto> adminUserDtos);

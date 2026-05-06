@@ -17,47 +17,66 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Optional;
 
-@Component
-public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
-    private final JwtUtil jwtUtil;
-    private final UserRepository userRepository;
-
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, UserRepository userRepository) {
-        this.jwtUtil = jwtUtil;
-        this.userRepository = userRepository;
-    }
-
-    @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
-    ) throws ServletException, IOException {
-        String authorizationHeader = request.getHeader("Authorization");
-
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        if (SecurityContextHolder.getContext().getAuthentication() == null) {
-            try {
-                String username = jwtUtil.extractUsername(authorizationHeader);
-                Optional<User> userOptional = userRepository.findByUsername(username);
-
-                if (userOptional.isPresent()) {
-                    User user = userOptional.get();
-                    UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
-            } catch (JwtException | IllegalArgumentException ignored) {
-                // Invalid/expired token: proceed without authentication.
-            }
-        }
-
-        filterChain.doFilter(request, response);
-    }
-}
+/**
+ * A Spring Security filter that checks each incoming request for a JWT token.
+ *
+ * <p>If a valid Bearer token is found, the filter loads the user and stores an
+ * authenticated object in the SecurityContext. This means downstream code
+ * (controllers, @PreAuthorize checks, etc.) can treat the request as logged in.
+ *
+ * <p>If the token is missing, invalid, or expired, the filter does not throw an
+ * error here; it simply continues as unauthenticated, and access rules decide what
+ * is allowed.
+ */
+//
+//@Component
+//public class JwtAuthenticationFilter extends OncePerRequestFilter {
+//
+//   private final JwtUtil jwtUtil;
+//   private final UserRepository userRepository;
+//
+//   public JwtAuthenticationFilter(JwtUtil jwtUtil, UserRepository userRepository) {
+//       this.jwtUtil = jwtUtil;
+//       this.userRepository = userRepository;
+//   }
+//
+//   @Override
+//   protected void doFilterInternal(
+//           HttpServletRequest request,
+//           HttpServletResponse response,
+//           FilterChain filterChain
+//   ) throws ServletException, IOException {
+//       // Read the Authorization header (expected format: "Bearer <token>").
+//       String authorizationHeader = request.getHeader("Authorization");
+//
+//       // No Bearer token present -> continue request without setting authentication.
+//       if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+//           filterChain.doFilter(request, response);
+//           return;
+//       }
+//
+//       // Only authenticate from token if another filter hasn't already done so.
+//       if (SecurityContextHolder.getContext().getAuthentication() == null) {
+//           try {
+//               // Parse username from token (JwtUtil typically validates token structure/signature).
+//               String username = jwtUtil.extractUsername(authorizationHeader);
+//               Optional<User> userOptional = userRepository.findByUsername(username);
+//
+//               if (userOptional.isPresent()) {
+//                   User user = userOptional.get();
+//                   // Create an authenticated principal with the user's authorities/roles.
+//                   UsernamePasswordAuthenticationToken authentication =
+//                           new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+//                   authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+//                   // Store auth in SecurityContext so Spring treats this request as authenticated.
+//                   SecurityContextHolder.getContext().setAuthentication(authentication);
+//               }
+//           } catch (JwtException | IllegalArgumentException ignored) {
+//               // Invalid/expired token: proceed without authentication.
+//           }
+//       }
+//
+//       // Continue the filter chain for the current request.
+//       filterChain.doFilter(request, response);
+//   }
+//}

@@ -43,6 +43,8 @@ public class AuthController {
 
     @GetMapping("/me")
     UserResponseDto me() {
+
+        // Note how we can get the user from the security context
         Authentication authentication = org.springframework.security.core.context.SecurityContextHolder
                 .getContext()
                 .getAuthentication();
@@ -51,6 +53,8 @@ public class AuthController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         }
 
+        // We have our user!
+        // Maybe better in a base controller method: getAuthUser()
         User user = (User) authentication.getPrincipal();
         return this.userMapper.toResponseDto(user);
     }
