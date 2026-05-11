@@ -17,7 +17,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+// Boots the full Spring application context for integration testing.
 @SpringBootTest
+// Runs each test in a transaction and rolls it back after the test completes.
 @Transactional
 class BookEntityIntegrationTest {
 
@@ -69,6 +71,7 @@ class BookEntityIntegrationTest {
 
         assertThrows(DataIntegrityViolationException.class, () -> {
             bookRepository.save(duplicate);
+            // Force pending INSERT execution so the DB constraint violation is raised here.
             entityManager.flush();
         });
     }
