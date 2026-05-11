@@ -47,7 +47,7 @@ public class BookController {
 
     @PutMapping("/{id}")
     Book update(@RequestBody BookRequestDto bookRequestDto, @PathVariable int id) {
-        bookRequestDto.setId(id);
+        bookRequestDto.setId(id + 1);
         return this.bookService.update(this.bookMapper.toEntity(bookRequestDto));
     }
 

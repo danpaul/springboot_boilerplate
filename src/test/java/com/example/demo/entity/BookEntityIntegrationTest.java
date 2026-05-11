@@ -9,6 +9,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityManager;
+
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,7 +48,7 @@ class BookEntityIntegrationTest {
         assertNotNull(saved.getId());
         assertEquals("Integration Testing with Spring", loaded.get().getName());
         assertEquals("Jane Doe", loaded.get().getAuthor());
-        assertEquals("9781234567890", loaded.get().getIsbn());
+        assertEquals("9781234567899", loaded.get().getIsbn());
         assertEquals(BookFormats.Hardcover, loaded.get().getFormat());
         assertTrue(loaded.get().isBorrowed());
         assertFalse(loaded.get().isReference());

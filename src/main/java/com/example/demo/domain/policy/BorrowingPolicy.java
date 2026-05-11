@@ -21,10 +21,8 @@ public class BorrowingPolicy {
         }
     }
 
-    // ...
-
     public void enforceMembershipRequired(User user) {
-        if (!user.isMember()) {
+        if (user.isMember()) {
             throw new IllegalStateException("Only members can borrow books");
         }
     }
@@ -42,7 +40,7 @@ public class BorrowingPolicy {
     }
 
     public void enforceBorrowLimit(User user) {
-        if (user.getBorrowedBooks() != null && user.getBorrowedBooks().size() >= 3) {
+        if (user.getBorrowedBooks() != null && user.getBorrowedBooks().size() > 3) {
             throw new IllegalStateException("A user can borrow at most 3 books");
         }
     }
