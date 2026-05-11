@@ -21,6 +21,8 @@ public class BorrowingPolicy {
         }
     }
 
+    // ...
+
     public void enforceMembershipRequired(User user) {
         if (!user.isMember()) {
             throw new IllegalStateException("Only members can borrow books");

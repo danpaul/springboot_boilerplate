@@ -32,15 +32,19 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class BookServiceTest {
 
+    // Creates a Mockito test double instead of using a real repository implementation.
     @Mock
     private BookRepository bookRepository;
 
+    // Another mock dependency controlled entirely from the test.
     @Mock
     private UserRepository userRepository;
 
+    // Mocked policy lets us verify calls and force policy-related failures when needed.
     @Mock
     private BorrowingPolicy borrowingPolicy;
 
+    // Builds BookService and injects all @Mock fields into its constructor automatically.
     @InjectMocks
     private BookService bookService;
 
@@ -63,11 +67,13 @@ class BookServiceTest {
     @Test
     void findAll_returnsAllBooks() {
         List<Book> books = List.of(new Book(), new Book());
+        // Stubbing: when this mock method is called, return predefined data.
         when(bookRepository.findAll()).thenReturn(books);
 
         Iterable<Book> result = bookService.findAll();
 
         assertEquals(books, result);
+        // Verification: assert that collaboration with the mock happened as expected.
         verify(bookRepository).findAll();
     }
 
@@ -110,6 +116,7 @@ class BookServiceTest {
 
     @Test
     void borrowBook_happyPath_updatesAndSavesUserAndBook() {
+        // Stubbing repository lookups to simulate existing entities.
         when(bookRepository.findById(1)).thenReturn(Optional.of(book));
         when(userRepository.findById(10L)).thenReturn(Optional.of(user));
         when(bookRepository.save(book)).thenReturn(book);
@@ -122,6 +129,7 @@ class BookServiceTest {
         verify(userRepository).save(user);
         verify(bookRepository).save(book);
 
+        // InOrder verification checks sequence, not just whether calls occurred.
         InOrder inOrder = inOrder(userRepository, bookRepository);
         inOrder.verify(userRepository).save(user);
         inOrder.verify(bookRepository).save(book);
@@ -133,7 +141,9 @@ class BookServiceTest {
 
         assertThrows(ResourceNotFoundException.class, () -> bookService.borrowBook(1, 10L));
 
+        // never() + matcher (anyLong) verifies a method was not called with any long value.
         verify(userRepository, never()).findById(anyLong());
+        // any() matcher means "any object of the expected parameter type".
         verify(borrowingPolicy, never()).enforceBorrowingPolicy(any(), any());
     }
 
@@ -152,6 +162,7 @@ class BookServiceTest {
         book.setBorrowed(true);
         when(bookRepository.findById(1)).thenReturn(Optional.of(book));
         when(userRepository.findById(10L)).thenReturn(Optional.of(user));
+        // doThrow(...).when(mock) is the preferred style for forcing exceptions on void methods.
         doThrow(new IllegalStateException("Book is already borrowed"))
                 .when(borrowingPolicy).enforceBorrowingPolicy(user, book);
 
