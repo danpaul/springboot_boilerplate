@@ -3,7 +3,6 @@ package com.example.demo.dto;
 import com.example.demo.enums.BookFormats;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,4 +31,8 @@ public class BookRequestDto {
 
     @NotNull(message = "Book format is required")
     private BookFormats format;
+
+    private boolean isBorrowed;
+    private boolean isReference;
+    private boolean isPremium;
 }

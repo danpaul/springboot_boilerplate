@@ -1,5 +1,6 @@
 package com.example.demo.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,10 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReviewResponseDto {
-    private Long id;
-    private String title;
-    private String content;
-    private int rating;
-    private UserResponseDto user;
+public class BookBorrowRequestDto {
+    @NotNull(message = "userId is required")
+    private Long userId;
 }

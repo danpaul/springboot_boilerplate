@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.List;
-
 // Define an entity. JPA will automatically sync this with an underlying table
 @Entity
 @Table(
@@ -23,7 +21,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString(exclude = "reviews")
+@ToString
 public class Book {
     // define a primary ID column
     @Id
@@ -44,6 +42,8 @@ public class Book {
     @Column(length = 16, nullable = false)
     private BookFormats format;
 
-    @OneToMany(mappedBy = "book")
-    private List<Review> reviews;
+    private boolean isBorrowed;
+    private boolean isReference;
+    private boolean isPremium;
+
 }

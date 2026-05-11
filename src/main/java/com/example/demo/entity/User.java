@@ -1,15 +1,12 @@
 package com.example.demo.entity;
 
-import com.example.demo.enums.Roles;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -23,8 +20,8 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString(exclude = "password")
-public class User implements UserDetails {
+@ToString
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,25 +33,21 @@ public class User implements UserDetails {
     private String email;
 
     @Column(nullable = false)
-    private String password;
+    private boolean isMember;
+    @Column(nullable = false)
+    private boolean isPremiumMember;
 
-    private List<Roles> roles;
+    @ManyToMany
+    private List<Book> borrowedBooks = new ArrayList<>();
 
-    public User(String username, String password, List<Roles> roles) {
+    public User(String username, String email) {
         this.username = username;
-        this.password = password;
-        this.roles = roles;
+        this.email = email;
     }
 
-    public User(Long id, String username, String password, List<Roles> roles) {
+    public User(Long id, String username, String email) {
         this.id = id;
         this.username = username;
-        this.password = password;
-        this.roles = roles;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles;
+        this.email = email;
     }
 }
