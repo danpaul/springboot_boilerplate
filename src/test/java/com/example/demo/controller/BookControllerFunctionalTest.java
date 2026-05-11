@@ -174,8 +174,7 @@ class BookControllerFunctionalTest {
 
         Map<String, Object> request = new HashMap<>();
         request.put("userId", savedUser.getId());
-
-        // TODO:
+        
         mockMvc.perform(patch("/books/{id}", savedBook.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))

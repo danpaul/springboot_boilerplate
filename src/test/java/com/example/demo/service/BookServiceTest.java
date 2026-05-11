@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-import com.example.demo.domain.policy.BorrowingPolicy;
 import com.example.demo.entity.Book;
 import com.example.demo.entity.User;
 import com.example.demo.exception.ResourceNotFoundException;
@@ -23,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -37,9 +35,6 @@ class BookServiceTest {
 
     @Mock
     private UserRepository userRepository;
-
-    @Mock
-    private BorrowingPolicy borrowingPolicy;
 
     @InjectMocks
     private BookService bookService;
@@ -118,7 +113,6 @@ class BookServiceTest {
 
         assertTrue(result.isBorrowed());
         assertTrue(user.getBorrowedBooks().contains(book));
-        verify(borrowingPolicy).enforceBorrowingPolicy(user, book);
         verify(userRepository).save(user);
         verify(bookRepository).save(book);
 
@@ -134,7 +128,6 @@ class BookServiceTest {
         assertThrows(ResourceNotFoundException.class, () -> bookService.borrowBook(1, 10L));
 
         verify(userRepository, never()).findById(anyLong());
-        verify(borrowingPolicy, never()).enforceBorrowingPolicy(any(), any());
     }
 
     @Test
@@ -143,8 +136,6 @@ class BookServiceTest {
         when(userRepository.findById(10L)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> bookService.borrowBook(1, 10L));
-
-        verify(borrowingPolicy, never()).enforceBorrowingPolicy(any(), any());
     }
 
     @Test
@@ -152,12 +143,11 @@ class BookServiceTest {
         book.setBorrowed(true);
         when(bookRepository.findById(1)).thenReturn(Optional.of(book));
         when(userRepository.findById(10L)).thenReturn(Optional.of(user));
-        doThrow(new IllegalStateException("Book is already borrowed"))
-                .when(borrowingPolicy).enforceBorrowingPolicy(user, book);
 
-        assertThrows(IllegalStateException.class, () -> bookService.borrowBook(1, 10L));
+        IllegalStateException exception =
+                assertThrows(IllegalStateException.class, () -> bookService.borrowBook(1, 10L));
 
-        verify(borrowingPolicy).enforceBorrowingPolicy(user, book);
+        assertEquals("Book is already borrowed", exception.getMessage());
         verify(userRepository, never()).save(any());
         verify(bookRepository, never()).save(any());
     }
@@ -166,13 +156,12 @@ class BookServiceTest {
     void borrowBook_propagatesPolicyException() {
         when(bookRepository.findById(1)).thenReturn(Optional.of(book));
         when(userRepository.findById(10L)).thenReturn(Optional.of(user));
-        doThrow(new IllegalStateException("Policy rejected"))
-                .when(borrowingPolicy).enforceBorrowingPolicy(user, book);
+        user.setMember(false);
 
         IllegalStateException exception =
                 assertThrows(IllegalStateException.class, () -> bookService.borrowBook(1, 10L));
 
-        assertEquals("Policy rejected", exception.getMessage());
+        assertEquals("Only members can borrow books", exception.getMessage());
         verify(userRepository, never()).save(any());
         verify(bookRepository, never()).save(any());
     }

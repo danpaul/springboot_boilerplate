@@ -47,10 +47,10 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-    @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<Map<String, Object>> handleIllegalState(IllegalStateException ex) {
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
-    }
+//    @ExceptionHandler(IllegalStateException.class)
+//    public ResponseEntity<Map<String, Object>> handleIllegalState(IllegalStateException ex) {
+//        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+//    }
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Map<String, Object>> handleResponseStatus(ResponseStatusException ex) {

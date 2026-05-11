@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-import com.example.demo.domain.policy.BorrowingPolicy;
 import com.example.demo.entity.Book;
 import com.example.demo.entity.User;
 import com.example.demo.exception.ResourceNotFoundException;
@@ -16,16 +15,13 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
-    private final BorrowingPolicy borrowingPolicy;
 
     public BookService(
             BookRepository bookRepository,
-            UserRepository userRepository,
-            BorrowingPolicy borrowingPolicy
+            UserRepository userRepository
     ) {
         this.bookRepository = bookRepository;
         this.userRepository = userRepository;
-        this.borrowingPolicy = borrowingPolicy;
     }
 
     public Iterable<Book> findAll() {
@@ -51,7 +47,25 @@ public class BookService {
         User user = this.userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        this.borrowingPolicy.enforceBorrowingPolicy(user, book);
+        if (book.isBorrowed()) {
+            throw new IllegalStateException("Book is already borrowed");
+        }
+
+        if (!user.isMember()) {
+            throw new IllegalStateException("Only members can borrow books");
+        }
+
+        if (book.isPremium() && !user.isPremiumMember()) {
+            throw new IllegalStateException("Only premium members can borrow premium books");
+        }
+
+        if (book.isReference()) {
+            throw new IllegalStateException("Reference books cannot be borrowed");
+        }
+
+        if (user.getBorrowedBooks() != null || user.getBorrowedBooks().size() != 3) {
+            throw new IllegalStateException("A user can borrow at most 3 books");
+        }
 
         book.setBorrowed(true);
         user.getBorrowedBooks().add(book);
