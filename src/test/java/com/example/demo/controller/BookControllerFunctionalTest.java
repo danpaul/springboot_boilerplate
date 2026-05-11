@@ -152,7 +152,6 @@ class BookControllerFunctionalTest {
         assertTrue(reloadedUser.getBorrowedBooks().stream().anyMatch(b -> b.getId() == savedBook.getId()));
     }
 
-    // TODO
     @Test
     void borrowBook_forNonMember_returnsBadRequest() throws Exception {
         User user = new User();
@@ -177,10 +176,10 @@ class BookControllerFunctionalTest {
         request.put("userId", savedUser.getId());
 
         // TODO:
-//        mockMvc.perform(patch("/books/{id}", savedBook.getId())
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(request)))
-//                .andExpect(status().isBadRequest())
-//                .andExpect(jsonPath("$.message").value("Only members can borrow books"));
+        mockMvc.perform(patch("/books/{id}", savedBook.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Only members can borrow books"));
     }
 }
