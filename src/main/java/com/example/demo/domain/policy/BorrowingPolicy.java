@@ -20,9 +20,7 @@ public class BorrowingPolicy {
             throw new IllegalStateException("Book is already borrowed");
         }
     }
-
-    // ...
-
+    
     public void enforceMembershipRequired(User user) {
         if (!user.isMember()) {
             throw new IllegalStateException("Only members can borrow books");
