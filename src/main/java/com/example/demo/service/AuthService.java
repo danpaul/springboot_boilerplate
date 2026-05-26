@@ -28,9 +28,7 @@ public class AuthService {
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        if (user.getRoles() == null || user.getRoles().isEmpty()) {
-            user.setRoles(List.of(Roles.ROLE_USER));
-        }
+        user.setRoles(List.of(Roles.ROLE_USER));
 
         return this.userRepository.save(user);
     }
